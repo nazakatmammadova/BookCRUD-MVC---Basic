@@ -1,0 +1,356 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <style>
+      table tr {
+        vertical-align: middle;
+      }
+      #imageModal img {
+        max-height: 500px;
+      }
+      .book-img-form {
+        color: transparent;
+        transition: all 0.3s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+      }
+      .book-img-form input {
+        display: none;
+      }
+      .book-img-form img {
+        position: absolute;
+        width: 150px;
+        height: 200px;
+        box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.35);
+        z-index: 0;
+      }
+      .book-img-form .form-label {
+        cursor: pointer;
+        width: 150px;
+        height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fafafa;
+        margin-bottom: 0;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 10000;
+      }
+      .book-img-form span {
+        padding: 0.2em;
+        font-weight: bolder;
+        font-size: 25px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+      <div class="container">
+        <a class="navbar-brand" href="#">Book</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" href="~/Home/Index">Home</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <main class="my-5">
+      <div class="container">
+        <div class="row">
+          <table class="table table-hover border">
+            <thead>
+              <tr>
+                <th>Number</th>
+                <th>Book name</th>
+                <th>Book price</th>
+                <th>Book image</th>
+                <th>Book author</th>
+                <th>Book genre</th>
+                <th colspan="2" class="text-center">
+                  <button
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#insertModal">+</button>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+                        @{
+                            int index = 1;
+                        }
+                        @foreach (var item in ViewBag.Book)
+                        {
+                            <tr>
+                                <th>@index</th>
+                                <td>@item.BookName</td>
+                                <td><span>@item.BookPrice</span> &#8380;</td>
+                                <td>
+                                    <button class="btn btn-outline-primary img-btns"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#imageModal"
+                                            data-book-url="/img/@item.BookImg">
+                                        show image
+                                    </button>
+                                </td>
+                                <td>@item.BookAuthor.AuthorName @item.BookAuthor.AuthorSurname</td>
+                                <td>@item.BookGenre.GenreName</td>
+                                <td>
+                                    <button class="btn btn-danger delete-btns"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal"
+                                            bId="@item.Id">
+                                        Delete
+                                    </button>
+                                </td>
+                                <td><button class="btn btn-primary edit-btns" bId="@item.Id" gId="@item.BookGenreId" aId="@item.BookAuthorId" data-bs-toggle="modal" data-bs-target="#updateModal">Edit</button></td>
+                            </tr>
+                            index++;
+                        }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- insert Modal -->
+      <div class="modal fade" id="insertModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5">Insert Book</h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form method="post" action="/Admin/AddBook" enctype="multipart/form-data">
+                <div class="mb-3">
+                  <label for="addname" class="form-label">Enter Book name</label>
+                  <input type="text" class="form-control" id="addname" name="BookName"/>
+                </div>
+                <div class="mb-3">
+                  <label for="addprice" class="form-label">Enter Book price</label>
+                  <input type="text" class="form-control" id="addprice" name="BookPrice" />
+                </div>
+                <div class="mb-3">
+                  <p>Select Image</p>
+                  <div class="book-img-form">
+                    <label class="form-label" for="addfile">
+                      <span>Select Image</span>
+                    </label>
+                    <input
+                      id="addfile"
+                      class="image-input"
+                      type="file"
+                      accept="image/*"
+                      name="BookImg"
+                    />
+                    <img
+                      src="https://media.istockphoto.com/id/183382838/photo/antique-leather-book-cover.jpg?s=612x612&w=0&k=20&c=unp4609MLB8yelXXMdNf5wAHEuXs2aknTR4UNfO0EhE="
+                      class="book-image"
+                    />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Select Author</label>
+                  <select class="form-select" name="BookAuthorId">
+                    <option selected hidden>Authors</option>
+                                    @foreach (var item in ViewBag.Author)
+                                    {
+                                        <option value="@item.Id">@item.AuthorName @item.AuthorSurname</option>
+                                    }
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Select Genre</label>
+                  <select class="form-select" name="BookGenreId">
+                    <option selected hidden>Genres</option>
+                                    @foreach (var item in ViewBag.Genre)
+                                    {
+                                        <option value="@item.Id">@item.GenreName</option>
+                                    }
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-success">Add book</button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Delete Modal -->
+      <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5">Delete Book</h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <p class="m-0">Silmek istediyinize eminsiniz?</p>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <a class="btn btn-danger delete-btn" href="">Delete</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Show image Modal -->
+      <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5">Show Book Image</h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <img
+                src="https://m.media-amazon.com/images/M/MV5BOWM5Yzg4ODctM2ViMC00ZGEzLWI2YzEtZDYwY2E4YTBhYTY1XkEyXkFqcGdeQXVyNDk3NzU2MTQ@@._V1_.jpg"
+                class="img-fluid w-100 modal-img"
+              />
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+        <!-- Update Modal -->
+        <div class="modal fade" id="updateModal" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5">Update Book</h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <form method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                      <label for="updname" class="form-label">Enter Book name</label>
+                      <input type="text" class="form-control" id="updname" name="BookName" />
+                    </div>
+                    <div class="mb-3">
+                      <label for="updprice" class="form-label">Enter Book price</label>
+                      <input type="text" class="form-control" id="updprice" name="BookPrice" />
+                    </div>
+                    <div class="mb-3">
+                      <p>Select Image</p>
+                      <div class="book-img-form">
+                        <label class="form-label" for="updfile">
+                          <span>Select Image</span>
+                        </label>
+                        <input
+                          id="updfile"
+                          class="image-input"
+                          type="file"
+                          accept="image/*"
+                          name="BookImg"
+                        />
+                        <img
+                          src="https://media.istockphoto.com/id/183382838/photo/antique-leather-book-cover.jpg?s=612x612&w=0&k=20&c=unp4609MLB8yelXXMdNf5wAHEuXs2aknTR4UNfO0EhE="
+                          class="book-image upd-image"
+                        />
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Select Author</label>
+                      <select class="form-select" id="authorSelect" name="BookAuthorId">
+                        <option selected hidden>Authors</option>
+                                    @foreach (var item in ViewBag.Author)
+                                    {
+                                        <option value="@item.Id">@item.AuthorName @item.AuthorSurname</option>
+                                    }
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Select Genre</label>
+                      <select class="form-select" id="genreSelect" name="BookGenreId">
+                        <option selected hidden>Genres</option>
+                                    @foreach (var item in ViewBag.Genre)
+                                    {
+                                        <option value="@item.Id">@item.GenreName</option>
+                                    }
+                      </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">update book</button>
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal">
+                      Close
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+    </main>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="~/js/admin.js"></script>
+  </body>
+</html>
